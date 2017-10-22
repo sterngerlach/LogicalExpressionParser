@@ -175,6 +175,9 @@ std::shared_ptr<TokenStream> Lexer(std::string& logicalExpr)
                     // 同値('<->')の記号の最初の1文字については処理が済んでいるので, 残りの2文字を確認
                     tokenStream->AddToken(new Token("<->", TokenType::Eq));
 
+                    tokenText = "";
+                    state = LexerState::None;
+
                     // 次の文字についても処理が済んだので, インデックスを1つ先に進められる
                     ++i;
                 } else {
@@ -187,6 +190,7 @@ std::shared_ptr<TokenStream> Lexer(std::string& logicalExpr)
 
                     return nullptr;
                 }
+                break;
             default:
                 // 字句解析が有り得ない状態にあるのでエラーを返す
                 std::cout << "Illegal lexer state.\n";
