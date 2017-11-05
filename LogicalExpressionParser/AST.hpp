@@ -58,9 +58,12 @@ class FactorAST : public BaseAST {
 public:
     FactorAST(const std::shared_ptr<BaseAST>& expr) :
         BaseAST(ASTType::Factor), mExpr(expr) { }
+    FactorAST() :
+        BaseAST(ASTType::Factor) { }
     ~FactorAST() { }
 
     inline const std::shared_ptr<BaseAST>& Expr() const { return this->mExpr; }
+    void SetExpr(const std::shared_ptr<BaseAST>& exprAST) { this->mExpr = exprAST; }
 
 private:
     std::shared_ptr<BaseAST> mExpr;
@@ -70,9 +73,12 @@ class NotExpressionAST : public BaseAST {
 public:
     NotExpressionAST(const std::shared_ptr<BaseAST>& expr) :
         BaseAST(ASTType::NotExpression), mExpr(expr) { }
+    NotExpressionAST() :
+        BaseAST(ASTType::NotExpression) { }
     ~NotExpressionAST() { }
 
     inline const std::shared_ptr<BaseAST>& Expr() const { return this->mExpr; }
+    void SetExpr(const std::shared_ptr<BaseAST>& exprAST) { this->mExpr = exprAST; }
 
 private:
     std::shared_ptr<BaseAST> mExpr;
@@ -82,11 +88,17 @@ class AndOrExpressionAST : public BaseAST {
 public:
     AndOrExpressionAST(const std::shared_ptr<BaseAST>& left, const std::shared_ptr<BaseAST>& right, const std::string& op) :
         BaseAST(ASTType::AndOrExpression), mLeft(left), mRight(right), mOperator(op) { }
+    AndOrExpressionAST() :
+        BaseAST(ASTType::AndOrExpression) { }
     ~AndOrExpressionAST() { }
 
     inline const std::shared_ptr<BaseAST>& Left() const { return this->mLeft; }
     inline const std::shared_ptr<BaseAST>& Right() const { return this->mRight; }
     inline const std::string& Operator() const { return this->mOperator; }
+
+    void SetLeft(const std::shared_ptr<BaseAST>& leftExprAST) { this->mLeft = leftExprAST; }
+    void SetRight(const std::shared_ptr<BaseAST>& rightExprAST) { this->mRight = rightExprAST; }
+    void SetOperator(const std::string& op) { this->mOperator = op; }
 
 private:
     std::shared_ptr<BaseAST> mLeft;
@@ -98,11 +110,17 @@ class ExpressionAST : public BaseAST {
 public:
     ExpressionAST(const std::shared_ptr<BaseAST>& left, const std::shared_ptr<BaseAST>& right, const std::string& op) :
         BaseAST(ASTType::Expression), mLeft(left), mRight(right), mOperator(op) { }
+    ExpressionAST() :
+        BaseAST(ASTType::Expression) { }
     ~ExpressionAST() { }
 
     inline const std::shared_ptr<BaseAST>& Left() const { return this->mLeft; }
     inline const std::shared_ptr<BaseAST>& Right() const { return this->mRight; }
     inline const std::string& Operator() const { return this->mOperator; }
+
+    void SetLeft(const std::shared_ptr<BaseAST>& leftExprAST) { this->mLeft = leftExprAST; }
+    void SetRight(const std::shared_ptr<BaseAST>& rightExprAST) { this->mRight = rightExprAST; }
+    void SetOperator(const std::string& op) { this->mOperator = op; }
 
 private:
     std::shared_ptr<BaseAST> mLeft;
@@ -113,9 +131,11 @@ private:
 class ConstantAST : public BaseAST {
 public:
     ConstantAST(bool value) : BaseAST(ASTType::Constant), mValue(value) { }
+    ConstantAST() : BaseAST(ASTType::Constant) { }
     ~ConstantAST() { }
 
     inline bool Value() const { return this->mValue; }
+    void SetValue(bool value) { this->mValue = value; }
 
 private:
     bool mValue;
@@ -124,9 +144,11 @@ private:
 class VariableAST : public BaseAST {
 public:
     VariableAST(const std::string& name) : BaseAST(ASTType::Variable), mName(name) { }
+    VariableAST() : BaseAST(ASTType::Variable) { }
     ~VariableAST() { }
 
     inline const std::string& Name() const { return this->mName; }
+    void SetName(const std::string& name) { this->mName = name; }
 
 private:
     std::string mName;

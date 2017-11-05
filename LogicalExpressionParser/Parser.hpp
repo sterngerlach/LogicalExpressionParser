@@ -8,10 +8,13 @@
 #pragma once
 
 #include <cassert>
+#include <functional>
 #include <memory>
+#include <stack>
 #include <string>
 #include <vector>
 
+class Token;
 class TokenStream;
 class BaseAST;
 class ExpressionAST;
@@ -21,20 +24,41 @@ class VariableAST;
 class Parser {
 public:
     Parser(const std::shared_ptr<TokenStream>& tokenStream) : mTokenStream(tokenStream) { }
-    ~Parser() { }
+    virtual ~Parser() { }
 
-    std::shared_ptr<BaseAST> Parse();
+    virtual std::shared_ptr<BaseAST> Parse() { return nullptr; }
+    virtual std::shared_ptr<ConstantAST> VisitConstant();
+    virtual std::shared_ptr<VariableAST> VisitVariable();
+
+protected:
+    std::shared_ptr<TokenStream> mTokenStream;
+};
+
+class InfixParser final : public Parser {
+public:
+    InfixParser(const std::shared_ptr<TokenStream>& tokenStream) : Parser(tokenStream) { }
+    ~InfixParser() { }
+
+    std::shared_ptr<BaseAST> Parse() override;
 
 private:
     std::shared_ptr<BaseAST> VisitFactor();
     std::shared_ptr<BaseAST> VisitExpression();
     std::shared_ptr<BaseAST> VisitAndOrExpression();
     std::shared_ptr<BaseAST> VisitNotExpression();
-    std::shared_ptr<ConstantAST> VisitConstant();
-    std::shared_ptr<VariableAST> VisitVariable();
+};
+
+class PrefixParser final : public Parser {
+public:
+    PrefixParser(const std::shared_ptr<TokenStream>& tokenStream) : Parser(tokenStream) { }
+    ~PrefixParser() { }
+
+    std::shared_ptr<BaseAST> Parse() override;
 
 private:
-    std::shared_ptr<TokenStream> mTokenStream;
+    std::shared_ptr<BaseAST> VisitThenOrEqExpression();
+    std::shared_ptr<BaseAST> VisitAndOrExpression();
+    std::shared_ptr<BaseAST> VisitNotExpression();
 };
 
 #endif // LOGICAL_EXPRESSION_PARSER_PARSER_HPP

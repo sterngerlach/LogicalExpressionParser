@@ -55,8 +55,10 @@ public:
     TokenStream() : mCurrentIndex(0U) { }
     ~TokenStream() = default;
 
+    inline bool HasMoreTokens() const { return this->mCurrentIndex < this->mTokens.size() - 1; }
+    inline void SetCurrentIndex(std::size_t index) { this->mCurrentIndex = index; }
+
     const std::shared_ptr<Token> CurrentToken() const;
-    bool HasMoreTokens() const { return this->mCurrentIndex < this->mTokens.size() - 1; }
     bool MoveNext();
     bool MovePrevious();
     bool MoveBack(std::size_t times);
