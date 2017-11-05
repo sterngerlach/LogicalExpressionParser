@@ -154,16 +154,23 @@ private:
     std::string mName;
 };
 
+enum class Notation {
+    Infix,
+    Prefix,
+    Postfix
+};
+
 class ASTPrinter {
 public:
     ASTPrinter() = default;
     ~ASTPrinter() = default;
 
-    void Print(const std::shared_ptr<BaseAST>& logicalExprAST, bool prefixNotation = false) const;
+    void Print(const std::shared_ptr<BaseAST>& logicalExprAST, Notation notation) const;
 
 private:
-    void PrintTree(const std::shared_ptr<BaseAST>& logicalExprAST) const;
+    void PrintInfixNotation(const std::shared_ptr<BaseAST>& logicalExprAST) const;
     void PrintPrefixNotation(const std::shared_ptr<BaseAST>& logicalExprAST) const;
+    void PrintPostfixNotation(const std::shared_ptr<BaseAST>& logicalExprAST) const;
 };
 
 #endif // LOGICAL_EXPRESSION_PARSER_AST_HPP

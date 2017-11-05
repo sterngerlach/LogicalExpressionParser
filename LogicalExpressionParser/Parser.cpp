@@ -470,3 +470,110 @@ std::shared_ptr<BaseAST> PrefixParser::VisitNotExpression()
 
     return notExprAST;
 }
+
+//
+// PostfixParserクラス
+//
+std::shared_ptr<BaseAST> PostfixParser::Parse()
+{
+    assert(this->mTokenStream != nullptr);
+
+    if (this->mTokenStream->CurrentToken() == nullptr)
+        return nullptr;
+
+    while (this->mTokenStream->CurrentToken() != nullptr) {
+        switch (this->mTokenStream->CurrentToken()->Type()) {
+            case TokenType::True:
+            case TokenType::False:
+            {
+                this->mASTStack.push(this->VisitConstant());
+                continue;
+            }
+            case TokenType::Variable:
+            {
+                this->mASTStack.push(this->VisitVariable());
+                continue;
+            }
+            case TokenType::And:
+            case TokenType::Or:
+            {
+                if (this->mASTStack.empty())
+                    return nullptr;
+
+                std::shared_ptr<BaseAST> rightExprAST = this->mASTStack.top();
+                this->mASTStack.pop();
+
+                if (this->mASTStack.empty())
+                    return nullptr;
+
+                std::shared_ptr<BaseAST> leftExprAST = this->mASTStack.top();
+                this->mASTStack.pop();
+
+                std::shared_ptr<AndOrExpressionAST> andOrExprAST = std::make_shared<AndOrExpressionAST>();
+
+                andOrExprAST->SetOperator((this->mTokenStream->CurrentToken()->Type() == TokenType::And) ? "∧" : "∨");
+                andOrExprAST->SetLeft(leftExprAST);
+                andOrExprAST->SetRight(rightExprAST);
+
+                this->mASTStack.push(andOrExprAST);
+                break;
+            }
+            case TokenType::Not:
+            {
+                if (this->mASTStack.empty())
+                    return nullptr;
+
+                std::shared_ptr<BaseAST> exprAST = this->mASTStack.top();
+                this->mASTStack.pop();
+
+                std::shared_ptr<NotExpressionAST> notExprAST = std::make_shared<NotExpressionAST>();
+                notExprAST->SetExpr(exprAST);
+
+                this->mASTStack.push(notExprAST);
+                break;
+            }
+            case TokenType::Then:
+            case TokenType::Eq:
+            {
+                if (this->mASTStack.empty())
+                    return nullptr;
+
+                std::shared_ptr<BaseAST> rightExprAST = this->mASTStack.top();
+                this->mASTStack.pop();
+
+                if (this->mASTStack.empty())
+                    return nullptr;
+
+                std::shared_ptr<BaseAST> leftExprAST = this->mASTStack.top();
+                this->mASTStack.pop();
+
+                std::shared_ptr<ExpressionAST> exprAST = std::make_shared<ExpressionAST>();
+
+                exprAST->SetOperator((this->mTokenStream->CurrentToken()->Type() == TokenType::Then) ? "->" : "<->");
+                exprAST->SetLeft(leftExprAST);
+                exprAST->SetRight(rightExprAST);
+
+                this->mASTStack.push(exprAST);
+                break;
+            }
+            default:
+                return nullptr;
+        }
+
+        if (!this->mTokenStream->MoveNext())
+            break;
+    }
+
+    // スタックには完成した抽象構文木が1つ積まれている
+    if (this->mASTStack.empty())
+        return nullptr;
+
+    std::shared_ptr<BaseAST> logicalExprAST = this->mASTStack.top();
+    this->mASTStack.pop();
+
+    // スタックに積み残しがある場合はエラーを返す
+    if (!this->mASTStack.empty())
+        return nullptr;
+
+    return logicalExprAST;
+}

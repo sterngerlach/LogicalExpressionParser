@@ -47,13 +47,25 @@ int main(int argc, char** argv)
 
             // Prefix Expressionと仮定して構文解析が上手くいかない場合
             if (exprAST == nullptr) {
-                std::cout << "Parse failed.\n";
-                continue;
+                // トークンを巻き戻す
+                tokenStream->SetCurrentIndex(0U);
+
+                // Postfix Expressionと仮定して構文解析
+                std::cout << "Parsing postfix expression...\n";
+                std::shared_ptr<PostfixParser> postfixExprParser = std::make_shared<PostfixParser>(tokenStream);
+                exprAST = postfixExprParser->Parse();
+
+                // Postfix Expressionと仮定して構文解析が上手くいかない場合
+                if (exprAST == nullptr) {
+                    std::cout << "Parse failed.\n";
+                    continue;
+                }
             }
         }
 
-        astPrinter->Print(exprAST);
-        astPrinter->Print(exprAST, true);
+        astPrinter->Print(exprAST, Notation::Infix);
+        astPrinter->Print(exprAST, Notation::Prefix);
+        astPrinter->Print(exprAST, Notation::Postfix);
     }
 
     std::getchar();

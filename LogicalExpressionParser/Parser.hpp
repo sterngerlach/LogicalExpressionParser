@@ -61,4 +61,16 @@ private:
     std::shared_ptr<BaseAST> VisitNotExpression();
 };
 
+
+class PostfixParser final : public Parser {
+public:
+    PostfixParser(const std::shared_ptr<TokenStream>& tokenStream) : Parser(tokenStream) { }
+    ~PostfixParser() { }
+
+    std::shared_ptr<BaseAST> Parse() override;
+
+private:
+    std::stack<std::shared_ptr<BaseAST>> mASTStack;
+};
+
 #endif // LOGICAL_EXPRESSION_PARSER_PARSER_HPP
